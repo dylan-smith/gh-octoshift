@@ -1,4 +1,36 @@
 #!/bin/bash
 set -e
 
-exec "/c/octoshift/octoshift.exe" "$@"
+repo="github/octoshiftcli"
+tag="v0.3"
+archive="octoshift.0.3"
+
+extensionPath="$(dirname "$0")"
+arch="$(uname -m)"
+
+platform=""
+exe=""
+
+if uname -a | grep Msys > /dev/null; then
+  platform="win-x64.zip"
+  exe="octoshift.exe"
+elif uname -a | grep Darwin > /dev/null; then
+  platform="osx-x64.tar.gz"
+  exe="octoshift"
+elif uname -a | grep Linux > /dev/null; then
+  platform="linux-x64.tar.gz"
+  exe="octoshift"
+fi
+
+archive="${archive}.${platform}"
+exe="${extensionPath}/bin/{exe}"
+
+if [[ ! -x "${exe}" ]]; then
+  mkdir -p bin
+  rm -f "${extensionPath}/bin/*"
+  gh release -R"${repo}" download "${tag}" -p "${archive}.${platform}" --dir="${extensionPath}/bin"
+  unzip "${extensionPath}/bin/${archive}.${platform}"
+  chmod +x "${exe}"
+fi
+
+exec "${exe}" "$@"
