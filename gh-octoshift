@@ -28,6 +28,7 @@ exe="${extensionPath}/bin/{exe}"
 if [[ ! -x "${exe}" ]]; then
   mkdir -p bin
   rm -f "${extensionPath}/bin/*"
+  echo "${repo} ${tag} ${archive} ${platform} ${extensionPath}"
   gh release -R"${repo}" download "${tag}" -p "${archive}.${platform}" --dir="${extensionPath}/bin"
   unzip "${extensionPath}/bin/${archive}.${platform}"
   chmod +x "${exe}"
